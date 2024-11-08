@@ -22,6 +22,32 @@
   animation: spin 0.5s linear 0s infinite;
 }
 
+.skip-button {
+  position: absolute;
+  top: 80%;
+  right: 50%;
+  transform: translate(50%, -50%);
+  background-color: #354a74;
+  color: white;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 5px;
+  outline: none;
+}
+
+.info-card {
+  width: 500px;
+  height: 300px;
+  background-color: #fff;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  padding: 1rem;
+  margin: 1rem;
+  color: #354a74;
+  font-size: 16px;
+  position: fixed;
+}
+
 .completed {
   font-size: 2rem;
   color: #03fc4e;
