@@ -13,11 +13,9 @@ function PreLoader3() {
         .then((json) => {
           console.log(json);
           setData(json);
-          setloading(true);
+          // setloading(true);
 
-          setTimeout(() => {
-            setcompleted(true);
-          }, 1000);
+          
         });
     }, 2000);
   }, []);
