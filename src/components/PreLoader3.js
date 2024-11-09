@@ -55,10 +55,12 @@ function PreLoader3() {
 
   const getMessage = (data) => {
     const browser = getBrowser(data.userAgentString);
+    //if mobile device and mac os, it's probably an iPhone
+    const os = data.operatingSystem === 'Mac OS' && data.deviceCategory === 'Mobile' ? 'iOS' : data.operatingSystem;
 
     return `
        Something is watching you. You are using ${browser} browser...but do you really know who is watching? 
-        You’re on a ${data.operatingSystem} system, with a ${data.deviceCategory} device. Your screen resolution is ${data.screenResolution}, 
+        You’re on a ${os} system, with a ${data.deviceCategory} device. Your screen resolution is ${data.screenResolution}, 
         but does it hide the truth? Your IP address, the key to your identity: ${data.ipAddress}. Do you feel safe?
         The time zone you're in: ${data.timeZone}. Are you trapped here, or can you escape?
         Your preferred language is ${data.preferredLanguage}. Is this how you truly communicate with the world...or is it something else? 
