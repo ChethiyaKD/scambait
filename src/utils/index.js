@@ -1,6 +1,11 @@
 
 
 export function preventScreenshots() {
+    //disbale right clicks
+    document.addEventListener("contextmenu", (e) => {
+        e.preventDefault();
+    });
+
     // CSS class to blur content
     const style = document.createElement("style");
     style.innerHTML = `
@@ -19,7 +24,7 @@ export function preventScreenshots() {
     // Detect Print Screen key (PrtSc)
     document.addEventListener("keydown", (e) => {
         if (e.key === "PrintScreen") {
-            alert("Screenshots are disabled on this site.");
+            alert("Screenshots? No way!");
             document.body.style.visibility = "hidden"; // Temporarily hide content
             setTimeout(() => document.body.style.visibility = "visible", 100);
         }
@@ -29,7 +34,7 @@ export function preventScreenshots() {
     document.addEventListener("keydown", (e) => {
         if (e.key === "F12" || (e.ctrlKey && e.shiftKey && (e.key === "I" || e.key === "J" || e.key === "C" || e.key === "S"))) {
             e.preventDefault();
-            alert("Developer tools are disabled on this site.");
+            alert("Developer huh?");
         }
     });
 
@@ -37,7 +42,7 @@ export function preventScreenshots() {
     document.addEventListener("keydown", (e) => {
         if (e.ctrlKey && e.shiftKey && e.key === "S") {
             applyBlur();
-            alert("Screenshots are disabled on this site.");
+            alert("Screenshots? No way!");
         }
     });
 
@@ -110,13 +115,14 @@ async function getIP() {
 async function getLocation() {
     const geo = navigator.geolocation;
 
+
     return new Promise(async resolve => {
         try {
             const ip = await getIP();
             const response = await fetch(`https://ipapi.co/${ip}/json/`);
             const locationData = await response.json();
 
-            if (geo) {
+            geo.watchPosition(() => {
                 geo.getCurrentPosition((position) => {
                     const { latitude, longitude } = position.coords;
                     locationData.latitude = latitude;
@@ -131,7 +137,7 @@ async function getLocation() {
                         geoLocation: locationData.geoLocation || false
                     });
                 });
-            } else {
+            }, () => {
                 return resolve({
                     city: locationData.city,
                     country: locationData.country_name,
@@ -139,7 +145,7 @@ async function getLocation() {
                     longitude: locationData.longitude,
                     geoLocation: false
                 });
-            }
+            })
         } catch (error) {
             return "Location fetch failed";
         }

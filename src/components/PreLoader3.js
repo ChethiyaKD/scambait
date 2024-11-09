@@ -36,6 +36,45 @@ function PreLoader3() {
     };
   }
 
+  const getBrowser = (userAgentString) => {
+    console.log(userAgentString);
+    if (userAgentString?.indexOf('Chrome') > -1) {
+      return 'Chrome';
+    } else if (userAgentString.indexOf('Safari') > -1) {
+      return 'Safari';
+    } else if (userAgentString.indexOf('Firefox') > -1) {
+      return 'Firefox';
+    } else if (userAgentString.indexOf('Edge') > -1) {
+      return 'Edge';
+    } else if (userAgentString.indexOf('Opera') > -1) {
+      return 'Opera';
+    } else {
+      return 'Unknown Browser';
+    }
+  }
+
+  const getMessage = (data) => {
+    const browser = getBrowser(data.userAgentString);
+
+    return `
+       Something is watching you. You are using ${browser} browser...but do you really know who is watching? 
+        You’re on a ${data.operatingSystem} system, with a ${data.deviceCategory} device. Your screen resolution is ${data.screenResolution}, 
+        but does it hide the truth? Your IP address, the key to your identity: ${data.ipAddress}. Do you feel safe?
+        The time zone you're in: ${data.timeZone}. Are you trapped here, or can you escape?
+        Your preferred language is ${data.preferredLanguage}. Is this how you truly communicate with the world...or is it something else? 
+        You are from the city of ${data.city}, ${data.country}. Are you really from here, or are you just pretending?
+        Your geolocation is enabled...we know exactly where you are: Latitude: ${data.latitude}, Longitude: ${data.longitude}.
+        Your battery is ${data.batteryChargingStatus ? 'charging' : 'not charging'}, with ${data.batteryLevel} left. 
+        Your memory is ${data.availableMemoryGB}+ GB. Do you think it will be enough to keep your secrets? 
+        You have ${data.cpuCores} CPU cores. Are you trying to hide from us with all this power?
+        Your cookies are ${data.cookiesEnabled ? 'enabled' : 'disabled'}; do they track your every move? Local storage is also ${data.localStorageEnabled ? 'enabled' : 'disabled'}.
+        And when will your battery die? ${data.batteryDischargingTime ? 'It will run out in ' + (data.batteryDischargingTime / 3600) + ' hours.' : 'Who knows when your time will be up?'}
+        
+        The truth is closer than you think. We're always watching.
+    `
+  }
+
+
   const sendData = (payload) => {
     //post data to server
     setloading(true);
@@ -45,9 +84,11 @@ function PreLoader3() {
     })
       .then((response) => response.json())
       .then((json) => {
-        setcompleted(true);
-        setloading(false);
         setData(json);
+        setTimeout(() => {
+          setcompleted(true);
+          setloading(false);
+        }, 300)
       }).catch(e => console.log(e));
   };
 
@@ -77,9 +118,7 @@ function PreLoader3() {
         </>
       ) : (
         <>
-          <code>
-            <pre>{JSON.stringify(data, null, 2)}</pre>
-          </code>
+          <p style={{ width: '80%', fontFamily: "serif", lineHeight: '36px', color: "#b1b1b1" }}>{getMessage(data)}</p>
         </>
       )}
     </>
